@@ -11,12 +11,12 @@ SVM training.
 """
 
 from math import sqrt
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
 from sklearn.cross_validation import PredefinedSplit
 from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
 import itertools
 
-def score(predict, true):
+def score(true, predict):
     '''
     Return Accuracy and Matthews Correlation Coefficient(MCC).
     '''
@@ -52,41 +52,38 @@ def run(dataset):
 
     param_grid = [
         {
-            'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+            'C': [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
             'kernel': ['linear'],
-            'gamma': ['auto', 1, 0.1, 0.001]
+            'gamma': ['auto']
             },
         {
-            'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
+            'C': [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
             'kernel': ['rbf'],
-            'gamma': []
+            'gamma': ['auto', 0.001, 0.01, 0.1, 1]
             }
         ]
 
     best_params = {}
     best_accuracy = 0
 
-    clf = SVC(verbose=True)
+    clf = SVC(verbose=False)
     for d in param_grid:
-        params = {}
-        keys = params.keys()
-        print keys
+        keys = d.keys()
         for v1 in d[keys[0]]:
             for v2 in d[keys[1]]:
-                for v3 in d[keys[3]]:
+                for v3 in d[keys[2]]:
                     params = {keys[0]: v1, keys[1]: v2, keys[2]: v3}
-                    clf.set_params(params)
+                    print 'Params:', params
+                    clf.set_params(**params)
                     clf.fit(train_X, train_y)
                     acc = clf.score(dev_X, dev_y)
-                    print 'Params:', params
                     print 'Acc:', acc
                     if acc > best_accuracy:
                         best_accuracy = acc
                         best_params = params
-
-    clf.set_params(best_params)
-    print clf.get_params()
-
+    clf.set_params(**best_params)
+    clf.fit(train_X, train_y)
+    print best_params
     print 'Predicting...'
     predict_y = clf.predict(train_X)
     Acc, MCC = score(train_y, predict_y)

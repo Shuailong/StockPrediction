@@ -27,7 +27,7 @@ class Predictor(object):
             raise ValueError('Feature type ' + feature_type + ' is not supported!')
         self.feature_type = feature_type
 
-    def run(self):
+    def run(self, force=False):
         # Get news for the company
         print
         news = Dataset(self.dataset)
@@ -55,10 +55,6 @@ class Predictor(object):
             feature_extractor = Event(train_X)
         else:
             pass
-
-        train_X = feature_extractor.get_feature(train_X)
-        dev_X = feature_extractor.get_feature(dev_X)
-        test_X = feature_extractor.get_feature(test_X)
 
         print
         print 'Number of train examples :\t{}, POS: \t{}, NEG: \t{}'.format(len(train_X), train_pos, train_neg)

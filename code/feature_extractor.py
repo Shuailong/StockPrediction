@@ -10,7 +10,7 @@ Feature extractor for final project.
 
 """
 
-from openIENER.API import mineOneSentence
+# from openIENER.API import mineOneSentence
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import pickle
