@@ -1,0 +1,6 @@
+data/
+*.docx
+*.pyc
+*.pptx
+*.key
+code/openIENER/
