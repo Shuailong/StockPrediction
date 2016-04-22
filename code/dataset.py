@@ -62,7 +62,13 @@ class Dataset(object):
 
         CACHE_FILE = os.path.join(CACHE_PATH, self.dataset + '_news.p')
         if not force and os.path.isfile(CACHE_FILE):
-            return pickle.load(open(CACHE_FILE, 'rb'))
+            d = pickle.load(open(CACHE_FILE, 'rb'))
+            num_news = 0
+            for date in d:
+                num_news += len(d[date])
+
+            print 'Loaded. {} news articles in {} days.'.format(num_news, len(self.dates))
+            return d
 
         print 'No cached found. Building all news from disk...'
         d = {}
