@@ -26,12 +26,12 @@ import tensorflow as tf
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 flags.DEFINE_float('learning_rate', 0.01, 'Initial learning rate.')
-flags.DEFINE_integer('hidden1', 512, 'Number of units in hidden layer 1.')
-flags.DEFINE_integer('hidden2', 32, 'Number of units in hidden layer 2.')
+flags.DEFINE_integer('hidden1', 1024, 'Number of units in hidden layer 1.')
+flags.DEFINE_integer('hidden2', 1024, 'Number of units in hidden layer 2.')
 flags.DEFINE_integer('batch_size', 1, 'Batch size.  '
                      'Must divide evenly into the dataset sizes.')
 flags.DEFINE_string('summaries_dir', '/tmp/dnn_logs', 'Summaries directory')
-flags.DEFINE_integer('max_iters', 3, 'Number of iterations of the train dataset')
+flags.DEFINE_integer('max_iters', 50, 'Number of iterations of the train dataset')
 
 
 def placeholder_inputs(batch_size, n_features):
@@ -85,7 +85,6 @@ def do_eval(sess,
 
         true_count += sess.run(eval_correct, feed_dict=feed_dict)
 
-    print(true_count)
     Acc = true_count / num_examples
     MCC = 0
 
@@ -129,19 +128,23 @@ def run(dataset):
         summary_op = tf.merge_all_summaries()
 
         sess = tf.Session()
+        # sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+
         init = tf.initialize_all_variables()
         sess.run(init)
 
         summary_writer = tf.train.SummaryWriter(FLAGS.summaries_dir, sess.graph)
 
+        step = 0
         for _ in xrange(FLAGS.max_iters):
-            for step in xrange(n_data):
-                feed_dict = fill_feed_dict(train_pairs[step],
+            for step_ in xrange(n_data):
+                feed_dict = fill_feed_dict(train_pairs[step_],
                                            features_placeholder,
                                            labels_placeholder)
 
                 _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
 
+                step += 1
                 if step % 10 == 0:
                     summary_str = sess.run(summary_op, feed_dict=feed_dict)
                     summary_writer.add_summary(summary_str, step)

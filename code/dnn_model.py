@@ -131,8 +131,10 @@ def evaluation(logits, labels):
       A scalar int32 tensor with the number of examples (out of batch_size)
       that were predicted correctly.
     """
-    y = tf.nn.softmax(logits)
-    correct_prediction = tf.equal(tf.to_float(labels), y)
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-    return accuracy
+    # For a classifier model, we can use the in_top_k Op.
+    # It returns a bool tensor with shape [batch_size] that is true for
+    # the examples where the label is in the top k (here k=1)
+    # of all logits for that example.
+    correct = tf.nn.in_top_k(logits, labels, 1)
+    # Return the number of true entries.
+    return tf.reduce_sum(tf.cast(correct, tf.int32))

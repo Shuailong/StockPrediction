@@ -11,10 +11,8 @@ SVM training.
 """
 
 from math import sqrt
-from sklearn.svm import SVC, LinearSVC
-from sklearn.cross_validation import PredefinedSplit
-from sklearn.grid_search import GridSearchCV, RandomizedSearchCV
-import itertools
+from sklearn.svm import SVC
+
 
 def score(true, predict):
     '''
@@ -52,12 +50,12 @@ def run(dataset):
 
     param_grid = [
         {
-            'C': [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
+            'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
             'kernel': ['linear'],
             'gamma': ['auto']
             },
         {
-            'C': [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
+            'C': [0.001, 0.01, 0.1, 1, 10, 100, 1000],
             'kernel': ['rbf'],
             'gamma': ['auto', 0.001, 0.01, 0.1, 1]
             }
@@ -76,10 +74,12 @@ def run(dataset):
                     print 'Params:', params
                     clf.set_params(**params)
                     clf.fit(train_X, train_y)
-                    acc = clf.score(dev_X, dev_y)
-                    print 'Acc:', acc
-                    if acc > best_accuracy:
-                        best_accuracy = acc
+                    acc_test = clf.score(dev_X, dev_y)
+                    acc_train = clf.score(train_X, train_y)
+                    print 'Train Acc:', acc_train
+                    print 'Dev Acc:', acc_test
+                    if acc_test > best_accuracy:
+                        best_accuracy = acc_test
                         best_params = params
     clf.set_params(**best_params)
     clf.fit(train_X, train_y)

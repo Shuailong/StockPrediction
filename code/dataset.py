@@ -214,8 +214,9 @@ class NewsLabels(object):
             date = dates[i]
             next_date = dates[i + 1]
             if date in self.company_news:
-                titles = [re.sub(r' update\d* ', '', news[0].replace('-', ' '))+'.'
-                          for news in self.company_news[date]]
+                # titles = [re.sub(r' update\d* ', '', news[0].replace('-', ' '))+'.'
+                #           for news in self.company_news[date]]
+                titles = [news[0] for news in self.company_news[date]]
             else:
                 continue
             if next_date in self.company_stock:

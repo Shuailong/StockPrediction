@@ -18,7 +18,7 @@ from time import time
 def main():
     start_time = time()
 
-    predictor = Predictor(company='INDEX', dataset='Bloomberg', classifier='SVM', feature_type='BoW')
+    predictor = Predictor(company='GOOG', dataset='Bloomberg', classifier='NN', feature_type='BoW')
     predictor.run()
 
     # companies = ['GOOG', 'BA', 'WMT', 'INDEX']
