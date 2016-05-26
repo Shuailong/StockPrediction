@@ -60,7 +60,7 @@ class Dataset(object):
         rtype: {date: List[(title, content)]}
         '''
 
-        CACHE_FILE = os.path.join(CACHE_PATH, self.dataset + '_news.p')
+        CACHE_FILE = os.path.join(CACHE_PATH, self.dataset + '_INDEX' + '_news.p')
         if not force and os.path.isfile(CACHE_FILE):
             d = pickle.load(open(CACHE_FILE, 'rb'))
             num_news = 0
@@ -78,7 +78,7 @@ class Dataset(object):
             for title in os.listdir(date_path):
                 if title != '.DS_Store':
                     articles.append(
-                        (title, open(os.path.join(date_path, title)).read()))
+                        (title.replace('-', ' '), open(os.path.join(date_path, title)).read()))
             key = date.replace('-', '')
             d[key] = articles
 
@@ -98,6 +98,9 @@ class Dataset(object):
         rtype: {date: List[(title, content)]}
         '''
 
+        if company == 'INDEX':
+            return self.get_all_news()
+
         CACHE_FILE = os.path.join(
             CACHE_PATH, self.dataset + '_' + company + '_news.p')
         if not force and os.path.isfile(CACHE_FILE):
@@ -105,9 +108,6 @@ class Dataset(object):
 
         print 'No cached found. Building {} news from all news...'.format(company)
         self.all_news = self.get_all_news()
-
-        if company == 'INDEX':
-            return self.all_news
 
         fullname = self.tickers[company]['Name']
         print 'Filtering articles for', company + '/' + fullname, '...'

@@ -14,6 +14,11 @@ from feature_extractor import BoW, Event
 import svm_train
 import dnn_train
 
+import pickle
+import os
+import sys
+
+
 class Predictor(object):
     def __init__(self, company='GOOG', dataset='Bloomberg', classifier='SVM', feature_type='BoW'):
 
@@ -31,11 +36,11 @@ class Predictor(object):
         print
         news = Dataset(self.dataset)
         print 'Getting news for {} in {} dataset...'.format(self.company, news)
-        company_news = news.get_news_by_company(self.company, force=False) # {date: List[(title, content)]}
+        company_news = news.get_news_by_company(self.company, force=False)  # {date: List[(title, content)]}
 
         # Get stock prices for the company
         sp = SP500()
-        company_stock = sp.get_stock(self.company) # {date: {Open: xx.xx, Close:xx.xx, ...}}
+        company_stock = sp.get_stock(self.company)  # {date: {Open: xx.xx, Close:xx.xx, ...}}
 
         # Construct X(string list) and y(label) for train, dev and test
         news_labels = NewsLabels(company_news, company_stock)
@@ -46,6 +51,13 @@ class Predictor(object):
         train_pos, train_neg = train_y.count(1), train_y.count(-1)
         dev_pos, dev_neg = dev_y.count(1), dev_y.count(-1)
         test_pos, test_neg = test_y.count(1), test_y.count(-1)
+
+        # DEBUG
+        CACHE_FILE = os.path.join(CACHE_PATH, self.dataset + '_' + self.company + '_' + 'feature.p')
+        dataset = pickle.load(open(CACHE_FILE, 'rb'))
+        print 'training...'
+        dnn_train.run(dataset)
+        sys.exit(0)
 
         # Extract features
         if self.feature_type == 'BoW':
@@ -73,12 +85,17 @@ class Predictor(object):
         if self.classifier == 'SVM':
             dataset = {'train': (train_X, train_y), 'dev': (dev_X, dev_y), 'test': (test_X, test_y)}
             print 'Training...'
+
             svm_train.run(dataset)
         elif self.classifier == 'NN':
             train_y = [1 if y == 1 else 0 for y in train_y]
             dev_y = [1 if y == 1 else 0 for y in dev_y]
             test_y = [1 if y == 1 else 0 for y in test_y]
             dataset = {'train': (train_X, train_y), 'dev': (dev_X, dev_y), 'test': (test_X, test_y)}
+
+            # Save training data
+            CACHE_FILE = os.path.join(CACHE_PATH, self.dataset + '_' + self.company + '_' + 'feature.p')
+            pickle.dump(dataset, open(CACHE_FILE, 'wb'))
             print 'Training...'
             dnn_train.run(dataset)
         else:

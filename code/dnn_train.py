@@ -31,7 +31,7 @@ flags.DEFINE_integer('hidden2', 1024, 'Number of units in hidden layer 2.')
 flags.DEFINE_integer('batch_size', 1, 'Batch size.  '
                      'Must divide evenly into the dataset sizes.')
 flags.DEFINE_string('summaries_dir', '/tmp/dnn_logs', 'Summaries directory')
-flags.DEFINE_integer('max_iters', 50, 'Number of iterations of the train dataset')
+flags.DEFINE_integer('max_iters', 3, 'Number of iterations of the train dataset')
 
 
 def placeholder_inputs(batch_size, n_features):
@@ -136,8 +136,10 @@ def run(dataset):
         summary_writer = tf.train.SummaryWriter(FLAGS.summaries_dir, sess.graph)
 
         step = 0
-        for _ in xrange(FLAGS.max_iters):
+        for iter_ in xrange(FLAGS.max_iters):
+            print('{}th iteration'.format(iter_))
             for step_ in xrange(n_data):
+                print('{}th data'.format(step_))
                 feed_dict = fill_feed_dict(train_pairs[step_],
                                            features_placeholder,
                                            labels_placeholder)

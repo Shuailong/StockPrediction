@@ -10,7 +10,7 @@ Feature extractor for final project.
 
 """
 
-# from openIENER.API import mineOneSentence
+from openIENER.API import mineOneSentence
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import pickle
@@ -53,8 +53,12 @@ class Event(object):
         if not force and os.path.isfile(CACHE_FILE):
             self.events_lists = pickle.load(open(CACHE_FILE, 'rb'))
         else:
-            print 'No cached found. Building all events from data...'
+            if force:
+                print 'Force mode on. Building all events from data...'
+            else:
+                print 'No cached found. Building all events from data...'
             events_lists = set()
+            print 'Total', len(X), 'days to be processed.'
             for sents in X:
                 for sent in sents:
                     events = mineOneSentence(sent.decode('utf-8'))
