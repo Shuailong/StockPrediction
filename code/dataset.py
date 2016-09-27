@@ -40,6 +40,7 @@ class Dataset(object):
 
         path = os.path.join(DATA_PATH, self.dirname)
         self.dates = os.listdir(path)
+
         if '.DS_Store' in self.dates:
             self.dates.remove('.DS_Store')
 
@@ -56,41 +57,50 @@ class Dataset(object):
 
     def get_all_news(self, force=False):
         '''
-        Return all news articles
-        rtype: {date: List[(title, content)]}
+        Return all news article titles
+        rtype: {date: List[title]}
         '''
 
         CACHE_FILE = os.path.join(CACHE_PATH, self.dataset + '_INDEX' + '_news.p')
         if not force and os.path.isfile(CACHE_FILE):
+            print 'Read from cache file...'
             d = pickle.load(open(CACHE_FILE, 'rb'))
             num_news = 0
             for date in d:
                 num_news += len(d[date])
-
-            print 'Loaded. {} news articles in {} days.'.format(num_news, len(self.dates))
+            print 'Loaded. {0} news articles in {1} days. On average {2:.2f} news a day.'.format(num_news, len(self.dates), num_news/float(len(self.dates)))
             return d
 
-        print 'No cached found. Building all news from disk...'
+        if force:
+            print 'Forced to build from dataset...'
+        else:
+            print 'No cached found. Building all news from disk...'
         d = {}
         for date in self.dates:
             date_path = os.path.join(DATA_PATH, self.dirname, date)
-            articles = []
-            for title in os.listdir(date_path):
-                if title != '.DS_Store':
-                    articles.append(
-                        (title.replace('-', ' '), open(os.path.join(date_path, title)).read()))
+            titles = []
+            for filename in os.listdir(date_path):
+                if filename != '.DS_Store':
+                    with open(os.path.join(date_path, filename), 'r') as f:
+                        lines = f.readline()[:-1] + f.readline()[:-1]
+                        lines = re.sub(r'-- B y.*', '', lines)
+                        lines = re.sub(r'-- \n?', '', lines)
+                        title = re.sub(r'-- .*', '', lines)
+                    if len(title):
+                        titles.append(title)
             key = date.replace('-', '')
-            d[key] = articles
+            if len(titles):
+                d[key] = titles
 
         num_news = 0
         for date in d:
             num_news += len(d[date])
 
-        print 'Loaded. {} news articles in {} days.'.format(num_news, len(self.dates))
+        print 'Loaded. {0} news articles in {1} days. On average {2:.2f} news a day.'.format(num_news, len(self.dates), num_news/float(len(self.dates)))
         pickle.dump(d, open(CACHE_FILE, 'wb'))
 
         return d
-
+###
     def get_news_by_company(self, company, force=False):
         '''
         company: ticker name
@@ -220,13 +230,11 @@ class NewsLabels(object):
             date = dates[i]
             next_date = dates[i + 1]
             if date in self.company_news:
-                # titles = [re.sub(r' update\d* ', '', news[0].replace('-', ' '))+'.'
-                #           for news in self.company_news[date]]
-                titles = [news[0] for news in self.company_news[date]]
+                titles = self.company_news[date]
             else:
                 continue
             if next_date in self.company_stock:
-                diff = self.company_stock[next_date]['Close'] - self.company_stock[next_date]['Open']
+                diff = self.company_stock[next_date]['Adj Close'] - self.company_stock[next_date]['Open']
                 if diff > 0:
                     label = 1
                 elif diff < 0:
@@ -238,12 +246,9 @@ class NewsLabels(object):
                 continue
 
             X.append(titles)
-            try:
-                y.append(label)
-            except:
-                print label
+            y.append(label)
 
-        return X, y
+        return X, y, dates
 
     def get_train(self):
         return self._get_data_by_date_range(self.TRAIN_START, self.TRAIN_END)

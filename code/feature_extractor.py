@@ -10,7 +10,7 @@ Feature extractor for final project.
 
 """
 
-from openIENER.API import mineOneSentence
+# from openIENER.API import mineOneSentence
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 import pickle
@@ -29,7 +29,7 @@ class BoW(object):
         X: training data sentences.
         type X: List[List[String]]
         '''
-        X = [''.join(x) for x in X]
+        X = [' '.join(x) for x in X]
         self.vectorizer = TfidfVectorizer(decode_error='ignores', stop_words='english',)
         self.vectorizer.fit(X)
 
@@ -38,7 +38,7 @@ class BoW(object):
         X: a sentence to be extracted.
         type X: List[String]
         '''
-        X = [''.join(x) for x in X]
+        X = [' '.join(x) for x in X]
         return self.vectorizer.transform(X).toarray()
 
 
