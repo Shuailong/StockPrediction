@@ -1,0 +1,19 @@
+1. Classification
+    BoW
+    feature engineering
+    SVM -> NN
+    undersamping unbalanced
+    context is useful
+    setiment analysis (literature review)
+
+    metric: positive F1
+
+2. Source classify: unknown, jounalist, in sentence
+    target: Seq labeling
+    Seq2Seq: LSTM
+
+
+3. News filtering: classification 
+
+** red word special meaning?
+

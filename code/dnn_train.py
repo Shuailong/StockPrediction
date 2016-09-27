@@ -15,7 +15,6 @@ Trains and Evaluates the NN using keras.
 from keras.models import Sequential
 from keras.layers import Dense
 
-
 def run(dataset):
 
     train_X, train_y = dataset['train']
@@ -26,8 +25,8 @@ def run(dataset):
     print 'Input dimension: {}'.format(dimension)
     print 'Building model...'
     model = Sequential()
-    model.add(Dense(1024, input_dim=dimension, activation='sigmoid'))
-    model.add(Dense(1024, activation='sigmoid'))
+    model.add(Dense(512, input_dim=dimension, activation='sigmoid'))
+    model.add(Dense(512, activation='sigmoid'))
     model.add(Dense(2, activation='softmax'))
 
     model.compile(loss='binary_crossentropy',
