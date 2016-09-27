@@ -23,6 +23,7 @@ def run(dataset):
     test_X, test_y = dataset['test']
 
     dimension = len(train_X[0])
+    print 'Input dimension: {}'.format(dimension)
     print 'Building model...'
     model = Sequential()
     model.add(Dense(1024, input_dim=dimension, activation='sigmoid'))

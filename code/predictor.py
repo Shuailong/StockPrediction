@@ -97,7 +97,6 @@ class Predictor(object):
             # pickle.dump(dataset, open(CACHE_FILE, 'wb'))
 
         # do training
-        print 'Training...'
         trainer.run(dataset)
 
 
