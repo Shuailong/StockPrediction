@@ -30,7 +30,7 @@ class BoW(object):
         type X: List[List[String]]
         '''
         X = [' '.join(x) for x in X]
-        self.vectorizer = TfidfVectorizer(decode_error='ignores', stop_words='english', norm='l2', max_features=20000)
+        self.vectorizer = TfidfVectorizer(decode_error='ignores', stop_words='english', norm='l2')
         self.vectorizer.fit(X)
 
     def get_feature(self, X):
