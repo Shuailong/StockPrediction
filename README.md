@@ -9,8 +9,8 @@ There are in total 448315 new articles in 1041 days. The stock prices data inclu
 Features: Bag of words TFIDF features, Event features extracted from OpenIE.
 Models: SVM, Feedforward Neural Network.
 
-![Stock](pic/DNN4Stock.png)
-
+![Stock](pic/DNN4Stock.png )
+*Deep Neural Network Model for Stock Prediction*
 ### Results
 
 Predict the stock price rise and fall of Google:
